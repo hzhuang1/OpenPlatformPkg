@@ -59,6 +59,7 @@ STATIC UINT16 mBootIndex = 0;
 #define HIKEY_BOOT_ENTRY_FASTBOOT          0
 #define HIKEY_BOOT_ENTRY_BOOT_EMMC         1    /* boot from eMMC */
 #define HIKEY_BOOT_ENTRY_BOOT_SD           2    /* boot from SD card */
+#define HIKEY_BOOT_ENTRY_ANDROID           3    /* boot from eMMC */
 
 STATIC struct HiKeyBootEntry Entries[] = {
   [HIKEY_BOOT_ENTRY_FASTBOOT] = {
@@ -78,6 +79,12 @@ STATIC struct HiKeyBootEntry Entries[] = {
     L"VenHw(594BFE73-5E18-4F12-8119-19DB8C5FC849)/HD(1,MBR,0x00000000,0x3F,0x21FC0)/Image",
     L"dtb=hi6220-hikey.dtb console=ttyAMA3,115200 earlycon=pl011,0xf7113000 root=/dev/mmcblk1p2 rw rootwait initrd=initrd.img efi=noruntime",
     L"boot from SD card",
+    LOAD_OPTION_CATEGORY_BOOT
+  },
+  [HIKEY_BOOT_ENTRY_ANDROID] = {
+    L"VenHw(B549F005-4BD4-4020-A0CB-06F42BDA68C3)/HD(6,GPT,5C0F213C-17E1-4149-88C8-8B50FB4EC70E,0x7000,0x20000)/Offset(0x0000,0x20000)",
+    L"console=ttyAMA3,115200 earlycon=pl011,0xf7113000 root=/dev/mmcblk0p9 rw rootwait initrd=initrd.img efi=noruntime",
+    L"boot Android",
     LOAD_OPTION_CATEGORY_BOOT
   }
 };
@@ -100,6 +107,7 @@ HiKeyVerifyBootEntry (
   BDS_LOAD_OPTION                    *LoadOption;
   EFI_STATUS                          Status;
   UINTN                               DescriptionLength;
+  UINTN                               Padding;
 
   Status = GetGlobalEnvironmentVariable (BootVariableName, NULL, &EfiLoadOptionSize, (VOID**)&EfiLoadOption);
   if (EFI_ERROR (Status)) {
@@ -127,6 +135,10 @@ HiKeyVerifyBootEntry (
     LoadOption->OptionalDataSize = 0;
   } else {
     LoadOption->OptionalData     = (VOID*)((UINTN)(LoadOption->FilePathList) + LoadOption->FilePathListLength);
+    Padding = (UINTN)LoadOption->OptionalData % sizeof(UINTN);
+    if (Padding) {
+      LoadOption->OptionalData   = (VOID*)((UINTN)LoadOption->OptionalData + sizeof(UINTN) - Padding);
+    }
     LoadOption->OptionalDataSize = EfiLoadOptionSize - ((UINTN)LoadOption->OptionalData - (UINTN)EfiLoadOption);
   }
 
@@ -515,7 +527,6 @@ HiKeyOnEndOfDxe (
                   &VariableSize,
                   (VOID*)&AutoBoot
                   );
-  DEBUG ((EFI_D_ERROR, "#%a, %d, Status:%r, AutoBoot:%d\n", __func__, __LINE__, Status, AutoBoot));
   if (Status == EFI_NOT_FOUND) {
     AutoBoot = 1;
     Status = gRT->SetVariable (
@@ -618,7 +629,6 @@ HiKeyOnEndOfDxe (
     DEBUG ((EFI_D_ERROR, "%a: failed to set BootNext variable\n", __func__));
     return;
   }
-  DEBUG ((EFI_D_ERROR, "#%a, %d, Status:%r\n", __func__, __LINE__, Status));
 }
 
 EFI_STATUS
