@@ -84,7 +84,7 @@ STATIC struct HiKeyBootEntry Entries[] = {
   },
   [HIKEY_BOOT_ENTRY_ANDROID] = {
     L"VenHw(B549F005-4BD4-4020-A0CB-06F42BDA68C3)/HD(6,GPT,5C0F213C-17E1-4149-88C8-8B50FB4EC70E,0x7000,0x20000)/Offset(0x0000,0x20000)",
-    L"console=ttyAMA3,115200 earlycon=pl011,0xf7113000 root=/dev/mmcblk0p9 rw rootwait initrd=initrd.img efi=noruntime",
+    L"console=ttyAMA3,115200 earlycon=pl011,0xf7113000 root=/dev/mmcblk0p9 rw rootwait efi=noruntime",
     L"boot Android",
     LOAD_OPTION_CATEGORY_BOOT
   }
@@ -219,7 +219,9 @@ HiKeyCreateBootEntry (
   BdsLoadOption->Attributes = LOAD_OPTION_ACTIVE | (LoadOption & LOAD_OPTION_CATEGORY);
 
   if (BootArgs) {
-    BdsLoadOption->OptionalDataSize = StrSize (BootArgs);
+    ASSERT ((StrSize (BootArgs) <= 512) && (StrSize (BootArgs) > 0));
+
+    BdsLoadOption->OptionalDataSize = 512;
     BdsLoadOption->OptionalData = (CHAR16*)AllocateZeroPool (BdsLoadOption->OptionalDataSize);
     ASSERT (BdsLoadOption->OptionalData != NULL);
     StrCpy (BdsLoadOption->OptionalData, BootArgs);
