@@ -356,7 +356,7 @@
   #
   # PEI Phase modules
   #
-  ArmPlatformPkg/PrePi/PeiMPCore.inf
+  ArmPlatformPkg/PrePi/PeiUniCore.inf
 
   #
   # DXE

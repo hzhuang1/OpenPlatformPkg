@@ -37,7 +37,7 @@
   HiKey960Mem.c
 
 [Sources.AARCH64]
-  HiKey960Helper.S | GCC
+  AArch64/HiKey960Helper.S
 
 [FeaturePcd]
   gEmbeddedTokenSpaceGuid.PcdCacheEnable
@@ -48,3 +48,4 @@
   gArmTokenSpaceGuid.PcdFvBaseAddress
 
   gArmTokenSpaceGuid.PcdArmPrimaryCoreMask
+  gArmTokenSpaceGuid.PcdArmPrimaryCore
