@@ -390,13 +390,14 @@
   MdeModulePkg/Universal/SerialDxe/SerialDxe.inf
 
   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
-  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf {
-    <LibraryClasses>
-      AuthVariableLib|MdeModulePkg/Library/AuthVariableLibNull/AuthVariableLibNull.inf
-      TpmMeasurementLib|MdeModulePkg/Library/TpmMeasurementLibNull/TpmMeasurementLibNull.inf
-      VarCheckLib|MdeModulePkg/Library/VarCheckLib/VarCheckLib.inf
-      NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
-  }
+  MdeModulePkg/Universal/Variable/EmuRuntimeDxe/EmuVariableRuntimeDxe.inf
+  #MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf {
+  #  <LibraryClasses>
+  #    AuthVariableLib|MdeModulePkg/Library/AuthVariableLibNull/AuthVariableLibNull.inf
+  #    TpmMeasurementLib|MdeModulePkg/Library/TpmMeasurementLibNull/TpmMeasurementLibNull.inf
+  #    VarCheckLib|MdeModulePkg/Library/VarCheckLib/VarCheckLib.inf
+  #    NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
+  #}
   #OpenPlatformPkg/Drivers/Variable/BlockVariableDxe/BlockVariableDxe.inf
 
   MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
