@@ -49,3 +49,15 @@
 
   gArmTokenSpaceGuid.PcdArmPrimaryCoreMask
   gArmTokenSpaceGuid.PcdArmPrimaryCore
+
+  #
+  # PL011 Serial Debug UART
+  #
+  gArmPlatformTokenSpaceGuid.PcdSerialDbgRegisterBase
+  gArmPlatformTokenSpaceGuid.PcdSerialDbgUartBaudRate
+  gArmPlatformTokenSpaceGuid.PcdSerialDbgUartClkInHz
+
+  gEfiMdePkgTokenSpaceGuid.PcdUartDefaultBaudRate
+  gEfiMdePkgTokenSpaceGuid.PcdUartDefaultDataBits
+  gEfiMdePkgTokenSpaceGuid.PcdUartDefaultParity
+  gEfiMdePkgTokenSpaceGuid.PcdUartDefaultStopBits

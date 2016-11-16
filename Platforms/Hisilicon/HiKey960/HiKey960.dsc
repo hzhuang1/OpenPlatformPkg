@@ -277,9 +277,9 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase|0x30020000
   gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize|0x00010000
 
-  # System Memory (256MB). Totally 4GB memory.
+  # System Memory (3.5GB). Totally 4GB memory.
   gArmTokenSpaceGuid.PcdSystemMemoryBase|0x00000000
-  gArmTokenSpaceGuid.PcdSystemMemorySize|0x10000000
+  gArmTokenSpaceGuid.PcdSystemMemorySize|0xE0000000
 
   # HiKey Dual-Cluster profile
   gArmPlatformTokenSpaceGuid.PcdCoreCount|8
@@ -302,6 +302,11 @@
   gArmPlatformTokenSpaceGuid.PL011UartInteger|10
   gArmPlatformTokenSpaceGuid.PL011UartFractional|26
 
+  ## PL011 - Serial Debug UART
+  gArmPlatformTokenSpaceGuid.PcdSerialDbgRegisterBase|0xFDF05000
+  gArmPlatformTokenSpaceGuid.PcdSerialDbgUartClkInHz|19200000
+  gArmPlatformTokenSpaceGuid.PcdSerialDbgUartBaudRate|115200
+
   ## PL031 RealTimeClock
   #gArmPlatformTokenSpaceGuid.PcdPL031RtcBase|0xF8003000
 
@@ -319,7 +324,7 @@
   #
   # ARM Architectural Timer Frequency
   #
-  gArmTokenSpaceGuid.PcdArmArchTimerFreqInHz|1200000
+  gArmTokenSpaceGuid.PcdArmArchTimerFreqInHz|1920000
   gEmbeddedTokenSpaceGuid.PcdMetronomeTickPeriod|1000
   gEmbeddedTokenSpaceGuid.PcdTimerPeriod|10000
   gEmbeddedTokenSpaceGuid.PcdTimerPeriod|10000 # expressed in 100ns units, 10,000 x 100 ns = 1,000,000 ns = 1 ms

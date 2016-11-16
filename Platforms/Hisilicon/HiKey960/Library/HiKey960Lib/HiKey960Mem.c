@@ -29,12 +29,12 @@
 #define HI3660_PERIPH_BASE              0xE0000000
 #define HI3660_PERIPH_SZ                0x20000000
 
-#define HIKEY960_EXTRA1_SYSTEM_MEMORY_BASE  0x11000000
-#define HIKEY960_EXTRA1_SYSTEM_MEMORY_SIZE  0xDF000000
-#define HIKEY960_EXTRA2_SYSTEM_MEMORY_BASE  0x0000000100000000
-#define HIKEY960_EXTRA2_SYSTEM_MEMORY_SIZE  0x0000000020000000
+#define HIKEY960_EXTRA_SYSTEM_MEMORY_BASE  0x0000000100000000
+#define HIKEY960_EXTRA_SYSTEM_MEMORY_SIZE  0x0000000020000000
 
-#define HIKEY960_MEMORY_SIZE                0x0000000100000000
+#define HIKEY960_MEMORY_SIZE               0x0000000100000000
+
+#define HIKEY960_RESERVED_MEMORY
 
 STATIC struct HiKeyReservedMemory {
   EFI_PHYSICAL_ADDRESS         Offset;
@@ -60,12 +60,14 @@ ArmPlatformGetVirtualMemoryMap (
   )
 {
   ARM_MEMORY_REGION_ATTRIBUTES  CacheAttributes;
-  UINTN                         Index = 0, Count, ReservedTop;
   ARM_MEMORY_REGION_DESCRIPTOR  *VirtualMemoryTable;
-  EFI_PEI_HOB_POINTERS          NextHob;
   EFI_RESOURCE_ATTRIBUTE_TYPE   ResourceAttributes;
+#ifdef HIKEY960_RESERVED_MEMORY
+  UINTN                         Index = 0, Count, ReservedTop;
+  EFI_PEI_HOB_POINTERS          NextHob;
   UINT64                        ResourceLength;
   EFI_PHYSICAL_ADDRESS          ResourceTop;
+#endif
 
   ResourceAttributes = (
       EFI_RESOURCE_ATTRIBUTE_PRESENT |
@@ -85,6 +87,7 @@ ArmPlatformGetVirtualMemoryMap (
       PcdGet64 (PcdSystemMemorySize)
   );
 
+#ifdef HIKEY960_RESERVED_MEMORY
   NextHob.Raw = GetHobList ();
   Count = sizeof (HiKeyReservedMemoryBuffer) / sizeof (struct HiKeyReservedMemory);
   while ((NextHob.Raw = GetNextHob (EFI_HOB_TYPE_RESOURCE_DESCRIPTOR, NextHob.Raw)) != NULL)
@@ -121,6 +124,7 @@ ArmPlatformGetVirtualMemoryMap (
     }
     NextHob.Raw = GET_NEXT_HOB (NextHob);
   }
+#endif
 
   // Declared the additional memory
   ResourceAttributes =
@@ -135,14 +139,8 @@ ArmPlatformGetVirtualMemoryMap (
   BuildResourceDescriptorHob (
     EFI_RESOURCE_SYSTEM_MEMORY,
     ResourceAttributes,
-    HIKEY960_EXTRA1_SYSTEM_MEMORY_BASE,
-    HIKEY960_EXTRA1_SYSTEM_MEMORY_SIZE);
-
-  BuildResourceDescriptorHob (
-    EFI_RESOURCE_SYSTEM_MEMORY,
-    ResourceAttributes,
-    HIKEY960_EXTRA2_SYSTEM_MEMORY_BASE,
-    HIKEY960_EXTRA2_SYSTEM_MEMORY_SIZE);
+    HIKEY960_EXTRA_SYSTEM_MEMORY_BASE,
+    HIKEY960_EXTRA_SYSTEM_MEMORY_SIZE);
 
   ASSERT (VirtualMemoryMap != NULL);
 
@@ -159,28 +157,22 @@ ArmPlatformGetVirtualMemoryMap (
 
   Index = 0;
 
-  // Hi3660 SOC peripherals
-  VirtualMemoryTable[Index].PhysicalBase    = HI3660_PERIPH_BASE;
-  VirtualMemoryTable[Index].VirtualBase     = HI3660_PERIPH_BASE;
-  VirtualMemoryTable[Index].Length          = HI3660_PERIPH_SZ;
-  VirtualMemoryTable[Index].Attributes      = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
-
-  // DDR - the first 256MB section
-  VirtualMemoryTable[++Index].PhysicalBase  = PcdGet64 (PcdSystemMemoryBase);
+  // DDR - the first 3.5GB section
+  VirtualMemoryTable[Index].PhysicalBase    = PcdGet64 (PcdSystemMemoryBase);
   VirtualMemoryTable[Index].VirtualBase     = PcdGet64 (PcdSystemMemoryBase);
   VirtualMemoryTable[Index].Length          = PcdGet64 (PcdSystemMemorySize);
   VirtualMemoryTable[Index].Attributes      = CacheAttributes;
 
-  // DDR - the second section for the rest of 3.5GB
-  VirtualMemoryTable[++Index].PhysicalBase = HIKEY960_EXTRA1_SYSTEM_MEMORY_BASE;
-  VirtualMemoryTable[Index].VirtualBase    = HIKEY960_EXTRA1_SYSTEM_MEMORY_BASE;
-  VirtualMemoryTable[Index].Length         = HIKEY960_EXTRA1_SYSTEM_MEMORY_SIZE;
-  VirtualMemoryTable[Index].Attributes     = CacheAttributes;
+  // Hi3660 SOC peripherals
+  VirtualMemoryTable[++Index].PhysicalBase  = HI3660_PERIPH_BASE;
+  VirtualMemoryTable[Index].VirtualBase     = HI3660_PERIPH_BASE;
+  VirtualMemoryTable[Index].Length          = HI3660_PERIPH_SZ;
+  VirtualMemoryTable[Index].Attributes      = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
-  // DDR - the third 0.5GB section
-  VirtualMemoryTable[++Index].PhysicalBase = HIKEY960_EXTRA2_SYSTEM_MEMORY_BASE;
-  VirtualMemoryTable[Index].VirtualBase    = HIKEY960_EXTRA2_SYSTEM_MEMORY_BASE;
-  VirtualMemoryTable[Index].Length         = HIKEY960_EXTRA2_SYSTEM_MEMORY_SIZE;
+  // DDR - the second 0.5GB section
+  VirtualMemoryTable[++Index].PhysicalBase = HIKEY960_EXTRA_SYSTEM_MEMORY_BASE;
+  VirtualMemoryTable[Index].VirtualBase    = HIKEY960_EXTRA_SYSTEM_MEMORY_BASE;
+  VirtualMemoryTable[Index].Length         = HIKEY960_EXTRA_SYSTEM_MEMORY_SIZE;
   VirtualMemoryTable[Index].Attributes     = CacheAttributes;
 
   // End of Table
