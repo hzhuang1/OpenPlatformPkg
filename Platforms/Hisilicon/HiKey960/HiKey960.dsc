@@ -91,6 +91,23 @@
   UefiRuntimeLib|MdePkg/Library/UefiRuntimeLib/UefiRuntimeLib.inf
   UefiRuntimeServicesTableLib|MdePkg/Library/UefiRuntimeServicesTableLib/UefiRuntimeServicesTableLib.inf
 
+  # BDS Libraries
+  UefiBootManagerLib|MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
+  PlatformBootManagerLib|ArmPkg/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
+  CustomizedDisplayLib|MdeModulePkg/Library/CustomizedDisplayLib/CustomizedDisplayLib.inf
+
+  # UiApp dependencies
+  ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
+  FileExplorerLib|MdeModulePkg/Library/FileExplorerLib/FileExplorerLib.inf
+  DxeServicesLib|MdePkg/Library/DxeServicesLib/DxeServicesLib.inf
+
+  # RunAxf support via Dynamic Shell Command protocol
+  # It uses the Shell libraries.
+  ArmShellCmdRunAxfLib|ArmPlatformPkg/Library/ArmShellCmdRunAxf/ArmShellCmdRunAxf.inf
+  ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
+  FileHandleLib|MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf
+  SortLib|MdeModulePkg/Library/UefiSortLib/UefiSortLib.inf
+
   # USB Requirements
   UefiUsbLib|MdePkg/Library/UefiUsbLib/UefiUsbLib.inf
   DmaLib|ArmPkg/Library/ArmDmaLib/ArmDmaLib.inf
@@ -255,6 +272,8 @@
   gEmbeddedTokenSpaceGuid.PcdMemoryTypeEfiLoaderCode|20
   gEmbeddedTokenSpaceGuid.PcdMemoryTypeEfiLoaderData|0
 
+  gEfiMdePkgTokenSpaceGuid.PcdDefaultTerminalType|4
+
   gEmbeddedTokenSpaceGuid.PcdEmbeddedAutomaticBootCommand|""
   gEmbeddedTokenSpaceGuid.PcdEmbeddedDefaultTextColor|0x07
   gEmbeddedTokenSpaceGuid.PcdEmbeddedMemVariableStoreSize|0x10000
@@ -308,18 +327,27 @@
   gArmPlatformTokenSpaceGuid.PcdSerialDbgUartBaudRate|115200
 
   ## PL031 RealTimeClock
-  #gArmPlatformTokenSpaceGuid.PcdPL031RtcBase|0xF8003000
+  gArmPlatformTokenSpaceGuid.PcdPL031RtcBase|0xFFF05000
 
   #
   # ARM General Interrupt Controller
   #
-  gArmTokenSpaceGuid.PcdGicDistributorBase|0xE82B0000
-  gArmTokenSpaceGuid.PcdGicInterruptInterfaceBase|0xE82B1000
+  gArmTokenSpaceGuid.PcdGicDistributorBase|0xE82B1000
+  gArmTokenSpaceGuid.PcdGicInterruptInterfaceBase|0xE82B2000
 
   # Use the serial console (ConIn & ConOut) and the Graphic driver (ConOut)
   gArmPlatformTokenSpaceGuid.PcdDefaultConOutPaths|L"VenHw(D3987D4B-971A-435F-8CAF-4967EB627241)/Uart(115200,8,N,1)/VenPcAnsi();VenHw(CE660500-824D-11E0-AC72-0002A5D5C51B)"
   gArmPlatformTokenSpaceGuid.PcdDefaultConInPaths|L"VenHw(D3987D4B-971A-435F-8CAF-4967EB627241)/Uart(115200,8,N,1)/VenPcAnsi()"
   gEfiMdePkgTokenSpaceGuid.PcdPlatformBootTimeOut|10
+
+  # GUID of the UEFI Shell
+  gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdShellFile|{ 0x83, 0xA5, 0x04, 0x7C, 0x3E, 0x9E, 0x1C, 0x4F, 0xAD, 0x65, 0xE0, 0x52, 0x68, 0xD0, 0xB4, 0xD1 }
+
+  # GUID of the UI app
+  gEfiMdeModulePkgTokenSpaceGuid.PcdBootManagerMenuFile|{ 0x21, 0xaa, 0x2c, 0x46, 0x14, 0x76, 0x03, 0x45, 0x83, 0x6e, 0x8a, 0xb6, 0xf4, 0x66, 0x23, 0x31 }
+
+  gEfiMdeModulePkgTokenSpaceGuid.PcdResetOnMemoryTypeInformationChange|FALSE
+
 
   #
   # ARM Architectural Timer Frequency
@@ -461,9 +489,45 @@
   # Bds
   #
   MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
-  IntelFrameworkModulePkg/Universal/BdsDxe/BdsDxe.inf
+  MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
+  MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
+  MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
+  MdeModulePkg/Application/UiApp/UiApp.inf {
+    <LibraryClasses>
+      NULL|MdeModulePkg/Library/DeviceManagerUiLib/DeviceManagerUiLib.inf
+      NULL|MdeModulePkg/Library/BootManagerUiLib/BootManagerUiLib.inf
+      NULL|MdeModulePkg/Library/BootMaintenanceManagerUiLib/BootMaintenanceManagerUiLib.inf
+  }
+  ShellPkg/Application/Shell/Shell.inf {
+    <LibraryClasses>
+      ShellCommandLib|ShellPkg/Library/UefiShellCommandLib/UefiShellCommandLib.inf
+      NULL|ShellPkg/Library/UefiShellLevel2CommandsLib/UefiShellLevel2CommandsLib.inf
+      NULL|ShellPkg/Library/UefiShellLevel1CommandsLib/UefiShellLevel1CommandsLib.inf
+      NULL|ShellPkg/Library/UefiShellLevel3CommandsLib/UefiShellLevel3CommandsLib.inf
+      NULL|ShellPkg/Library/UefiShellDriver1CommandsLib/UefiShellDriver1CommandsLib.inf
+      NULL|ShellPkg/Library/UefiShellDebug1CommandsLib/UefiShellDebug1CommandsLib.inf
+      NULL|ShellPkg/Library/UefiShellInstall1CommandsLib/UefiShellInstall1CommandsLib.inf
+      NULL|ShellPkg/Library/UefiShellNetwork1CommandsLib/UefiShellNetwork1CommandsLib.inf
+      NULL|ShellPkg/Library/UefiShellTftpCommandLib/UefiShellTftpCommandLib.inf
+      HandleParsingLib|ShellPkg/Library/UefiHandleParsingLib/UefiHandleParsingLib.inf
+      PrintLib|MdePkg/Library/BasePrintLib/BasePrintLib.inf
+      BcfgCommandLib|ShellPkg/Library/UefiShellBcfgCommandLib/UefiShellBcfgCommandLib.inf
+    <PcdsFixedAtBuild>
+      gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0xFF
+      gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
+      gEfiMdePkgTokenSpaceGuid.PcdUefiLibMaxPrintBufferSize|8000
+  }
+
+  # Legacy Linux Loader
+  ArmPkg/Application/LinuxLoader/LinuxLoader.inf {
+    <LibraryClasses>
+      BdsLib|ArmPkg/Library/BdsLib/BdsLib.inf
+  }
 
   #
-  # HiKey Platform
+  # HiKey960 Platform
   #
-  #OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyDxe/HiKeyDxe.inf
+  #OpenPlatformPkg/Platforms/Hisilicon/HiKey960/HiKey960Dxe/HiKey960Dxe.inf {
+  #  <LibraryClasses>
+  #    BdsLib|ArmPkg/Library/BdsLib/BdsLib.inf
+  #}

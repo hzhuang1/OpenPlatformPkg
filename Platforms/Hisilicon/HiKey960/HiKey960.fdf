@@ -173,13 +173,18 @@ READ_LOCK_STATUS   = TRUE
   #
   # UEFI applications
   #
-  INF ShellBinPkg/UefiShell/UefiShell.inf
+  INF ShellPkg/Application/Shell/Shell.inf
+
 
   #
   # Bds
   #
   INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
-  INF IntelFrameworkModulePkg/Universal/BdsDxe/BdsDxe.inf
+  INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
+  INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
+  INF MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
+  INF MdeModulePkg/Application/UiApp/UiApp.inf
+
 
   # add Device Tree to the Firmware Volume
   #FILE FREEFORM = 91148425-CDD2-4830-8BD0-C61C6DEA3621 {
@@ -189,7 +194,7 @@ READ_LOCK_STATUS   = TRUE
   #
   # HiKey960 Platform
   #
-  #INF OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyDxe/HiKeyDxe.inf
+  #INF OpenPlatformPkg/Platforms/Hisilicon/HiKey960/HiKey960Dxe/HiKey960Dxe.inf
 
 [FV.FVMAIN_COMPACT]
 FvAlignment        = 8
