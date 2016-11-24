@@ -111,6 +111,8 @@ READ_LOCK_STATUS   = TRUE
 
   INF MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
 
+  INF MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
+
   #
   # GPIO
   #

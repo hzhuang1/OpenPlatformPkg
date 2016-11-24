@@ -388,6 +388,8 @@
 
   MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
 
+  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
+
   #
   # GPIO
   #
@@ -460,6 +462,7 @@
       NULL|MdeModulePkg/Library/DeviceManagerUiLib/DeviceManagerUiLib.inf
       NULL|MdeModulePkg/Library/BootManagerUiLib/BootManagerUiLib.inf
       NULL|MdeModulePkg/Library/BootMaintenanceManagerUiLib/BootMaintenanceManagerUiLib.inf
+      PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   }
   ShellPkg/Application/Shell/Shell.inf {
     <LibraryClasses>
