@@ -335,6 +335,11 @@
   gDwEmmcDxeTokenSpaceGuid.PcdDwEmmcDxeClockFrequencyInHz|100000000
 
   #
+  # DW USB controller
+  #
+  gDwUsbDxeTokenSpaceGuid.PcdDwUsbDxeBaseAddress|0xF72C0000
+
+  #
   # Fastboot
   #
   gEmbeddedTokenSpaceGuid.PcdAndroidFastbootUsbVendorId|0x18d1
@@ -400,6 +405,7 @@
   # GPIO
   #
   ArmPlatformPkg/Drivers/PL061GpioDxe/PL061GpioDxe.inf
+  OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyGpio/HiKeyGpio.inf
 
   #
   # MMC/SD
@@ -421,6 +427,7 @@
   # USB Peripheral Support
   #
   EmbeddedPkg/Drivers/AndroidFastbootTransportUsbDxe/FastbootTransportUsbDxe.inf
+  OpenPlatformPkg/Drivers/Usb/DwUsbDxe/DwUsbDxe.inf
 
   #
   # Fastboot
@@ -429,6 +436,7 @@
     <LibraryClasses>
       BdsLib|ArmPkg/Library/BdsLib/BdsLib.inf
   }
+  OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyFastbootDxe/HiKeyFastbootDxe.inf
 
 
   #
@@ -490,3 +498,8 @@
       gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
       gEfiMdePkgTokenSpaceGuid.PcdUefiLibMaxPrintBufferSize|8000
   }
+
+  #
+  # HiKey Platform
+  #
+  OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyDxe/HiKeyDxe.inf

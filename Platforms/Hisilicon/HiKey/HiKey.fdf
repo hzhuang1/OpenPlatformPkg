@@ -103,6 +103,7 @@ READ_LOCK_STATUS   = TRUE
   # Multiple Console IO support
   #
   INF MdeModulePkg/Universal/Console/ConPlatformDxe/ConPlatformDxe.inf
+  INF MdeModulePkg/Universal/Console/ConSplitterDxe/ConSplitterDxe.inf
   INF MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
   INF MdeModulePkg/Universal/SerialDxe/SerialDxe.inf
 
@@ -117,6 +118,7 @@ READ_LOCK_STATUS   = TRUE
   # GPIO
   #
   INF ArmPlatformPkg/Drivers/PL061GpioDxe/PL061GpioDxe.inf
+  INF OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyGpio/HiKeyGpio.inf
 
   #
   # Multimedia Card Interface
@@ -138,11 +140,13 @@ READ_LOCK_STATUS   = TRUE
   # USB Peripheral Support
   #
   INF EmbeddedPkg/Drivers/AndroidFastbootTransportUsbDxe/FastbootTransportUsbDxe.inf
+  INF OpenPlatformPkg/Drivers/Usb/DwUsbDxe/DwUsbDxe.inf
 
   #
   # Fastboot
   #
   INF EmbeddedPkg/Application/AndroidFastboot/AndroidFastbootApp.inf
+  INF OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyFastbootDxe/HiKeyFastbootDxe.inf
 
   #
   # UEFI Network Stack
@@ -188,6 +192,11 @@ READ_LOCK_STATUS   = TRUE
   INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
   INF MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
   INF MdeModulePkg/Application/UiApp/UiApp.inf
+
+  #
+  # HiKey Platform
+  #
+  INF OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyDxe/HiKeyDxe.inf
 
 [FV.FVMAIN_COMPACT]
 FvAlignment        = 8
