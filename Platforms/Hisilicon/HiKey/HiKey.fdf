@@ -118,6 +118,7 @@ READ_LOCK_STATUS   = TRUE
   # GPIO
   #
   INF ArmPlatformPkg/Drivers/PL061GpioDxe/PL061GpioDxe.inf
+  INF OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyGpioDxe/HiKeyGpioDxe.inf
 
   #
   # Multimedia Card Interface
@@ -139,6 +140,9 @@ READ_LOCK_STATUS   = TRUE
   # USB Peripheral Support
   #
   INF EmbeddedPkg/Drivers/AndroidFastbootTransportUsbDxe/FastbootTransportUsbDxe.inf
+  INF OpenPlatformPkg/Drivers/Usb/DwUsbDxe/DwUsbDxe.inf
+  INF OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyFastbootDxe/HiKeyFastbootDxe.inf
+  INF OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyUsbDxe/HiKeyUsbDxe.inf
 
   #
   # Fastboot
@@ -168,7 +172,7 @@ READ_LOCK_STATUS   = TRUE
   #
   INF MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
   INF MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
-  INF FatBinPkg/EnhancedFatDxe/Fat.inf
+  INF FatPkg/EnhancedFatDxe/Fat.inf
   INF MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
 
   INF MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf

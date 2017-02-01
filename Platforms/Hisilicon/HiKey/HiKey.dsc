@@ -62,7 +62,7 @@
 
   FdtLib|EmbeddedPkg/Library/FdtLib/FdtLib.inf
   UefiBootManagerLib|MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
-  PlatformBootManagerLib|ArmPkg/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
+  PlatformBootManagerLib|OpenPlatformPkg/Platforms/Hisilicon/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
   CustomizedDisplayLib|MdeModulePkg/Library/CustomizedDisplayLib/CustomizedDisplayLib.inf
 
   ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
@@ -162,7 +162,7 @@
   ReportStatusCodeLib|IntelFrameworkModulePkg/Library/DxeReportStatusCodeLibFramework/DxeReportStatusCodeLib.inf
 
 [BuildOptions]
-  GCC:*_*_*_PLATFORM_FLAGS = -I$(WORKSPACE)/OpenPlatformPkg/Chips/Hisilicon/Hi6220/Include -I$(WORKSPACE)/OpenPlatformPkg/Platforms/Hisilicon/HiKey/Include
+  GCC:*_*_*_PLATFORM_FLAGS = -I$(WORKSPACE)/OpenPlatformPkg/Chips/Hisilicon/Hi6220/Include -I$(WORKSPACE)/OpenPlatformPkg/Platforms/Hisilicon/HiKey/Include -I$(WORKSPACE)/OpenPlatformPkg/Include
 
 [BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER]
   GCC:*_*_AARCH64_DLINK_FLAGS = -z common-page-size=0x10000
@@ -339,11 +339,19 @@
   gDwEmmcDxeTokenSpaceGuid.PcdDwEmmcDxeClockFrequencyInHz|100000000
 
   #
+  # DW USB controller
+  #
+  gDwUsbDxeTokenSpaceGuid.PcdDwUsbDxeBaseAddress|0xF72C0000
+
+  #
   #
   # Fastboot
   #
   gEmbeddedTokenSpaceGuid.PcdAndroidFastbootUsbVendorId|0x18d1
   gEmbeddedTokenSpaceGuid.PcdAndroidFastbootUsbProductId|0xd00d
+  gHiKeyTokenSpaceGuid.PcdAndroidFastbootNvmDevicePath|L"VenHw(b549f005-4bd4-4020-a0cb-06f42bda68c3)"
+  # Flash limit 128M/time, for memory concern
+  gHiKeyTokenSpaceGuid.PcdArmFastbootFlashLimit|"134217728"
 
 ################################################################################
 #
@@ -396,6 +404,7 @@
   # GPIO
   #
   ArmPlatformPkg/Drivers/PL061GpioDxe/PL061GpioDxe.inf
+  OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyGpioDxe/HiKeyGpioDxe.inf
 
   #
   # MMC/SD
@@ -417,6 +426,10 @@
   # USB Peripheral Support
   #
   EmbeddedPkg/Drivers/AndroidFastbootTransportUsbDxe/FastbootTransportUsbDxe.inf
+  OpenPlatformPkg/Drivers/Usb/DwUsbDxe/DwUsbDxe.inf
+  OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyFastbootDxe/HiKeyFastbootDxe.inf
+  OpenPlatformPkg/Platforms/Hisilicon/HiKey/HiKeyUsbDxe/HiKeyUsbDxe.inf
+
 
   #
   # Fastboot
@@ -451,6 +464,7 @@
   MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
   MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
   MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
+  FatPkg/EnhancedFatDxe/Fat.inf
 
   #
   # Bds
