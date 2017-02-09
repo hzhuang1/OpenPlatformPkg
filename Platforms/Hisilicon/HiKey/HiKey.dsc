@@ -353,6 +353,11 @@
   # Flash limit 128M/time, for memory concern
   gHiKeyTokenSpaceGuid.PcdArmFastbootFlashLimit|"134217728"
 
+  #
+  # Android Loader
+  #
+  gEmbeddedTokenSpaceGuid.PcdAndroidBootDevicePath|L"VenHw(B549F005-4BD4-4020-A0CB-06F42BDA68C3)/HD(6,GPT,5C0F213C-17E1-4149-88C8-8B50FB4EC70E,0xE00000,0x4000000)"
+
 ################################################################################
 #
 # Components Section - list of all EDK II Modules needed by this Platform
@@ -435,6 +440,22 @@
   # Fastboot
   #
   EmbeddedPkg/Application/AndroidFastboot/AndroidFastbootApp.inf {
+    <LibraryClasses>
+      BdsLib|ArmPkg/Library/BdsLib/BdsLib.inf
+  }
+
+  #
+  # Android Loader
+  #
+  EmbeddedPkg/Application/AndroidBoot/AndroidBootApp.inf {
+    <LibraryClasses>
+      BdsLib|ArmPkg/Library/BdsLib/BdsLib.inf
+  }
+
+  #
+  # Linux Loader
+  #
+  ArmPkg/Application/LinuxLoader/LinuxLoader.inf {
     <LibraryClasses>
       BdsLib|ArmPkg/Library/BdsLib/BdsLib.inf
   }

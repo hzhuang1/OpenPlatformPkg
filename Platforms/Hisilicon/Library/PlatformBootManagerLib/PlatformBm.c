@@ -467,6 +467,13 @@ PlatformBootManagerAfterConsole (
   PlatformRegisterFvBootOption (
     PcdGetPtr (PcdAndroidFastbootFile), L"Android Fastboot", LOAD_OPTION_ACTIVE
     );
+
+  //
+  // Register Android Boot
+  //
+  PlatformRegisterFvBootOption (
+    PcdGetPtr (PcdAndroidBootFile), L"Android Boot", LOAD_OPTION_ACTIVE
+    );
 }
 
 /**
