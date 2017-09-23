@@ -347,7 +347,6 @@ DwMmcHcReset (
   )
 {
   EFI_STATUS                Status;
-  UINT32                    Bmod;
   UINT32                    BlkSize;
 
   //
@@ -367,34 +366,6 @@ DwMmcHcReset (
   Status = DwMmcHcRwMmio (PciIo, Slot, DW_MMC_BLKSIZ, FALSE, sizeof (BlkSize), &BlkSize);
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "DwMmcHcReset: set block size fails: %r\n", Status));
-    return Status;
-  }
-
-  Bmod = DW_MMC_IDMAC_SWRESET;
-  Status = DwMmcHcRwMmio (PciIo, Slot, DW_MMC_BMOD, FALSE, sizeof (Bmod), &Bmod);
-  if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "DwMmcHcReset: init IDMAC fail: %r\n", Status));
-    return Status;
-  }
-
-  Status = DwMmcHcWaitMmioSet (
-             PciIo,
-             Slot,
-             DW_MMC_BMOD,
-             sizeof (Bmod),
-             DW_MMC_IDMAC_SWRESET,
-             0x00,
-             DW_MMC_HC_GENERIC_TIMEOUT
-             );
-  if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "DwMmcHcReset: wait to clear IDMAC SWRESET failure: %r\n", Status));
-    return Status;
-  }
-
-  Bmod = DW_MMC_IDMAC_ENABLE | DW_MMC_IDMAC_FB;
-  Status = DwMmcHcRwMmio (PciIo, Slot, DW_MMC_BMOD, FALSE, sizeof (Bmod), &Bmod);
-  if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "DwMmcHcReset: set BMOD failure: %r\n", Status));
     return Status;
   }
 

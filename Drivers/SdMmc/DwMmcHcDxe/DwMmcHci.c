@@ -885,7 +885,7 @@ DwMmcHcInitPowerVoltage (
     return Status;
   }
 
-  Data = DW_MMC_CTRL_INT_EN | DW_MMC_CTRL_DMA_EN | DW_MMC_CTRL_IDMAC_EN;
+  Data = DW_MMC_CTRL_INT_EN;
   Status = DwMmcHcRwMmio (PciIo, Slot, DW_MMC_CTRL, FALSE, sizeof (Data), &Data);
   return Status;
 }
@@ -949,6 +949,102 @@ DwMmcHcInitHost (
     return Status;
   }
 
+  return Status;
+}
+
+EFI_STATUS
+DwMmcHcStartDma (
+  IN DW_MMC_HC_PRIVATE_DATA           *Private,
+  IN DW_MMC_HC_TRB                    *Trb
+  )
+{
+  EFI_STATUS                          Status;
+  EFI_PCI_IO_PROTOCOL                 *PciIo;
+  UINT32                              Ctrl;
+  UINT32                              Bmod;
+
+  PciIo  = Trb->Private->PciIo;
+
+  // Reset DMA
+  Ctrl = DW_MMC_CTRL_DMA_RESET;
+  Status = DwMmcHcRwMmio (PciIo, Trb->Slot, DW_MMC_CTRL, FALSE, sizeof (Ctrl), &Ctrl);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "DwMmcHcStartDma: reset fails: %r\n", Status));
+    return Status;
+  }
+  Status = DwMmcHcWaitMmioSet (
+             PciIo,
+             Trb->Slot,
+             DW_MMC_CTRL,
+             sizeof (Ctrl),
+             DW_MMC_CTRL_DMA_RESET,
+             0x00,
+             DW_MMC_HC_GENERIC_TIMEOUT
+             );
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_INFO, "DwMmcHcStartDma: reset done with %r\n", Status));
+    return Status;
+  }
+  Bmod = DW_MMC_IDMAC_SWRESET;
+  Status = DwMmcHcOrMmio (PciIo, Trb->Slot, DW_MMC_BMOD, sizeof (Bmod), &Bmod);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "DwMmcHcStartDma: set BMOD fail: %r\n", Status));
+    return Status;
+  }
+
+  // Select IDMAC
+  Ctrl = DW_MMC_CTRL_IDMAC_EN;
+  Status = DwMmcHcOrMmio (PciIo, Trb->Slot, DW_MMC_CTRL, sizeof (Ctrl), &Ctrl);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "DwMmcHcStartDma: init IDMAC fail: %r\n", Status));
+    return Status;
+  }
+
+  // Enable IDMAC
+  Bmod = DW_MMC_IDMAC_ENABLE | DW_MMC_IDMAC_FB;
+  Status = DwMmcHcOrMmio (PciIo, Trb->Slot, DW_MMC_BMOD, sizeof (Bmod), &Bmod);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "DwMmcHcReset: set BMOD failure: %r\n", Status));
+    return Status;
+  }
+  return Status;
+}
+
+EFI_STATUS
+DwMmcHcStopDma (
+  IN DW_MMC_HC_PRIVATE_DATA           *Private,
+  IN DW_MMC_HC_TRB                    *Trb
+  )
+{
+  EFI_STATUS                          Status;
+  EFI_PCI_IO_PROTOCOL                 *PciIo;
+  UINT32                              Ctrl;
+  UINT32                              Bmod;
+
+  PciIo  = Trb->Private->PciIo;
+
+  // Disable and reset IDMAC
+  Status = DwMmcHcRwMmio (PciIo, Trb->Slot, DW_MMC_CTRL, TRUE, sizeof (Ctrl), &Ctrl);
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
+  Ctrl &= ~DW_MMC_CTRL_IDMAC_EN;
+  Ctrl |= DW_MMC_CTRL_DMA_RESET;
+  Status = DwMmcHcRwMmio (PciIo, Trb->Slot, DW_MMC_CTRL, FALSE, sizeof (Ctrl), &Ctrl);
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
+  // Stop IDMAC
+  Status = DwMmcHcRwMmio (PciIo, Trb->Slot, DW_MMC_BMOD, TRUE, sizeof (Bmod), &Bmod);
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
+  Bmod &= ~(DW_MMC_BMOD_FB | DW_MMC_BMOD_DE);
+  Bmod |= DW_MMC_BMOD_SWR;
+  Status = DwMmcHcRwMmio (PciIo, Trb->Slot, DW_MMC_BMOD, FALSE, sizeof (Bmod), &Bmod);
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
   return Status;
 }
 
@@ -1185,6 +1281,11 @@ DwMmcCreateTrb (
 
     if (Trb->DataLen) {
       Status = BuildDmaDescTable (Trb);
+      if (EFI_ERROR (Status)) {
+        PciIo->Unmap (PciIo, Trb->DataMap);
+        goto Error;
+      }
+      Status = DwMmcHcStartDma (Private, Trb);
       if (EFI_ERROR (Status)) {
         PciIo->Unmap (PciIo, Trb->DataMap);
         goto Error;
@@ -1584,14 +1685,22 @@ DwSdExecTrb (
       if (EFI_ERROR (Status)) {
         return Status;
       }
-    } while ((Idsts & BIT1) == 0);
+    } while ((Idsts & DW_MMC_IDSTS_RI) == 0);
+    Status = DwMmcHcStopDma (Private, Trb);
+    if (EFI_ERROR (Status)) {
+      return Status;
+    }
   } else if (Packet->OutTransferLength) {
     do {
       Status = DwMmcHcRwMmio (PciIo, Trb->Slot, DW_MMC_IDSTS, TRUE, sizeof (Idsts), &Idsts);
       if (EFI_ERROR (Status)) {
         return Status;
       }
-    } while ((Idsts & BIT0) == 0);
+    } while ((Idsts & DW_MMC_IDSTS_TI) == 0);
+    Status = DwMmcHcStopDma (Private, Trb);
+    if (EFI_ERROR (Status)) {
+      return Status;
+    }
   }
   switch (Packet->SdMmcCmdBlk->ResponseType) {
     case SdMmcResponseTypeR1:
