@@ -692,12 +692,6 @@ DwMmcHcClockSupply (
   } while (EFI_ERROR (Status));
 
   do {
-    // Enable MMC clock
-    ClkEna = 1;
-    Status = DwMmcHcRwMmio (PciIo, Slot, DW_MMC_CLKENA, FALSE, sizeof (ClkEna), &ClkEna);
-    if (EFI_ERROR (Status)) {
-      continue;
-    }
     ClkSrc = 0;
     Status = DwMmcHcRwMmio (PciIo, Slot, DW_MMC_CLKSRC, FALSE, sizeof (ClkSrc), &ClkSrc);
     if (EFI_ERROR (Status)) {
@@ -705,6 +699,12 @@ DwMmcHcClockSupply (
     }
     // Set clock divisor
     Status = DwMmcHcRwMmio (PciIo, Slot, DW_MMC_CLKDIV, FALSE, sizeof (Divisor), &Divisor);
+    if (EFI_ERROR (Status)) {
+      continue;
+    }
+    // Enable MMC clock
+    ClkEna = 1;
+    Status = DwMmcHcRwMmio (PciIo, Slot, DW_MMC_CLKENA, FALSE, sizeof (ClkEna), &ClkEna);
     if (EFI_ERROR (Status)) {
       continue;
     }
