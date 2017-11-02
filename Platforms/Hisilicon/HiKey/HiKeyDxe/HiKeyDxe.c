@@ -356,7 +356,7 @@ HiKeyEntryPoint (
              NULL,
              NULL,
              1,
-             0xF723D000, // eMMC
+             0xF723E000, // SD
              SIZE_4KB
              );
   if (EFI_ERROR (Status)) {
@@ -368,7 +368,7 @@ HiKeyEntryPoint (
              NULL,
              NULL,
              1,
-             0xF723E000, // SD
+             0xF723D000, // eMMC
              SIZE_4KB
              );
   if (EFI_ERROR (Status)) {
